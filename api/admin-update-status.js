@@ -5,21 +5,28 @@ export default async function handler(req, res) {
     const url = process.env.UPSTASH_REDIS_REST_URL;
     const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
+    if (!url || !token) {
+        return res.status(500).json({ success: false, message: "Config missing" });
+    }
+
+    const cleanUrl = url.trim().replace(/\/$/, "");
+    const cleanToken = token.trim();
+
     try {
-        const getRes = await fetch(`${url}/get/withdraws`, {
-            headers: { Authorization: `Bearer ${token}` }
+        const getRes = await fetch(`${cleanUrl}/get/withdraws`, {
+            headers: { Authorization: `Bearer ${cleanToken}` }
         });
         const getData = await getRes.json();
-        let withdraws = getData.result ? JSON.parse(getData.result) : [];
+        let withdraws = getData.result ? (typeof getData.result === 'string' ? JSON.parse(getData.result) : getData.result) : [];
 
         const item = withdraws.find(w => w.id === id);
         if (item) {
             item.status = status;
 
-            await fetch(`${url}/set/withdraws`, {
+            await fetch(`${cleanUrl}/set/withdraws`, {
                 method: 'POST',
-                headers: { Authorization: `Bearer ${token}` },
-                body: JSON.stringify(JSON.stringify(withdraws))
+                headers: { Authorization: `Bearer ${cleanToken}` },
+                body: JSON.stringify(withdraws)
             });
 
             return res.status(200).json({ success: true });
