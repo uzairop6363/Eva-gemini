@@ -423,7 +423,7 @@ if (withdrawBtn) {
 console.log("Eva Earning Part 5 Loaded");
 
 /* =========================================
-   PART 6 / 10: VIP PLAN ACTIVATION & MODAL (UPDATED)
+   PART 6 / 10: VIP PLAN ACTIVATION & MODAL (FIXED DYNAMIC PRICE)
 ========================================= */
 
 // Bank Details Configuration
@@ -446,8 +446,25 @@ vipButtons.forEach(button => {
             return;
         }
 
+        // Get Plan Name
         const selectedPlan = button.dataset.plan || button.getAttribute("data-plan") || "VIP 1";
-        const selectedPrice = button.dataset.price || button.getAttribute("data-price") || "2,000";
+        
+        // Dynamic Price Detection Logic
+        let selectedPrice = button.dataset.price || button.getAttribute("data-price");
+        
+        if (!selectedPrice) {
+            // Fallback: If price not in data-price attribute, search parent card text
+            const card = button.closest(".planCard") || button.closest(".card") || button.parentElement;
+            if (card) {
+                const text = card.innerText;
+                if (text.includes("3,000") || text.includes("3000")) selectedPrice = "3,000";
+                else if (text.includes("5,000") || text.includes("5000")) selectedPrice = "5,000";
+                else if (text.includes("10,000") || text.includes("10000")) selectedPrice = "10,000";
+                else selectedPrice = "2,000";
+            } else {
+                selectedPrice = "2,000";
+            }
+        }
 
         openVipModal(selectedPlan, selectedPrice);
     };
@@ -456,62 +473,44 @@ vipButtons.forEach(button => {
 function openVipModal(planName, amount) {
     let vipModal = document.getElementById("vipPaymentModal") || document.getElementById("paymentModal");
     
-    // Create popup dynamically if not present in HTML
-    if (!vipModal) {
-        vipModal = document.createElement("div");
-        vipModal.id = "vipPaymentModal";
-        vipModal.className = "modal show";
-        vipModal.style.cssText = "display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;";
-        
-        vipModal.innerHTML = `
-            <div style="background:#1e293b; color:#fff; padding:25px; border-radius:16px; width:90%; max-width:380px; box-shadow:0 10px 25px rgba(0,0,0,0.5); font-family:sans-serif; text-align:left;">
-                <h3 style="margin-top:0; color:#38bdf8; text-align:center;">💎 Plan Activation</h3>
-                
-                <div style="background:#0f172a; padding:12px; border-radius:10px; margin-bottom:15px; border:1px solid #334155;">
-                    <p style="margin:4px 0; font-size:15px;">Selected Plan: <b id="vModalPlan" style="color:#facc15;">${planName}</b></p>
-                    <p style="margin:4px 0; font-size:15px;">Amount Required: <b id="vModalAmount" style="color:#4ade80;">PKR ${amount}</b></p>
-                </div>
+    // Always recreate or update modal contents dynamically
+    if (vipModal) vipModal.remove(); // Remove existing to force render with accurate prices
 
-                <div style="background:#0f172a; padding:12px; border-radius:10px; border:1px solid #334155;">
-                    <h4 style="margin:0 0 8px 0; color:#38bdf8; font-size:14px;">Bank Account Details:</h4>
-                    <p style="margin:4px 0; font-size:13px;"><b>Bank Name:</b> <span id="vBankName">${BANK_DETAILS.bankName}</span></p>
-                    <p style="margin:4px 0; font-size:13px;"><b>Account Title:</b> <span id="vAccTitle">${BANK_DETAILS.accountTitle}</span></p>
-                    <p style="margin:4px 0; font-size:13px;"><b>Account / IBAN:</b><br><span id="vAccNum" style="color:#38bdf8; font-weight:bold; word-break:break-all;">${BANK_DETAILS.accountNumber}</span></p>
-                </div>
-
-                <div style="margin-top:15px; background:#1e1b4b; padding:10px; border-radius:8px; border:1px solid #6366f1;">
-                    <p id="vInstruction" style="margin:0; font-size:13px; color:#e0e7ff; text-align:center; font-weight:bold;">
-                        Send PKR ${amount} to this account to activate your plan.
-                    </p>
-                </div>
-
-                <button id="closeVipModalBtn" style="width:100%; padding:12px; margin-top:15px; background:#0052ff; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Close</button>
+    vipModal = document.createElement("div");
+    vipModal.id = "vipPaymentModal";
+    vipModal.className = "modal show";
+    vipModal.style.cssText = "display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;";
+    
+    vipModal.innerHTML = `
+        <div style="background:#1e293b; color:#fff; padding:25px; border-radius:16px; width:90%; max-width:380px; box-shadow:0 10px 25px rgba(0,0,0,0.5); font-family:sans-serif; text-align:left;">
+            <h3 style="margin-top:0; color:#38bdf8; text-align:center;">💎 Plan Activation</h3>
+            
+            <div style="background:#0f172a; padding:12px; border-radius:10px; margin-bottom:15px; border:1px solid #334155;">
+                <p style="margin:4px 0; font-size:15px;">Selected Plan: <b style="color:#facc15;">${planName}</b></p>
+                <p style="margin:4px 0; font-size:15px;">Amount Required: <b style="color:#4ade80;">PKR ${amount}</b></p>
             </div>
-        `;
-        document.body.appendChild(vipModal);
-        
-        document.getElementById("closeVipModalBtn").onclick = () => {
-            vipModal.style.display = "none";
-        };
-    } else {
-        // If popup element exists in HTML, fill values directly
-        const pElem = document.getElementById("vModalPlan") || document.getElementById("modalPlanName");
-        const aElem = document.getElementById("vModalAmount") || document.getElementById("modalAmount");
-        const bElem = document.getElementById("vBankName") || document.getElementById("bankName");
-        const tElem = document.getElementById("vAccTitle") || document.getElementById("accountTitle");
-        const nElem = document.getElementById("vAccNum") || document.getElementById("accountNumber");
-        const iElem = document.getElementById("vInstruction");
 
-        if (pElem) pElem.innerText = planName;
-        if (aElem) aElem.innerText = "PKR " + amount;
-        if (bElem) bElem.innerText = BANK_DETAILS.bankName;
-        if (tElem) tElem.innerText = BANK_DETAILS.accountTitle;
-        if (nElem) nElem.innerText = BANK_DETAILS.accountNumber;
-        if (iElem) iElem.innerText = `Send PKR ${amount} to this account to activate your plan.`;
+            <div style="background:#0f172a; padding:12px; border-radius:10px; border:1px solid #334155;">
+                <h4 style="margin:0 0 8px 0; color:#38bdf8; font-size:14px;">Bank Account Details:</h4>
+                <p style="margin:4px 0; font-size:13px;"><b>Bank Name:</b> <span>${BANK_DETAILS.bankName}</span></p>
+                <p style="margin:4px 0; font-size:13px;"><b>Account Title:</b> <span>${BANK_DETAILS.accountTitle}</span></p>
+                <p style="margin:4px 0; font-size:13px;"><b>Account / IBAN:</b><br><span style="color:#38bdf8; font-weight:bold; word-break:break-all;">${BANK_DETAILS.accountNumber}</span></p>
+            </div>
 
-        vipModal.style.display = "flex";
-        vipModal.classList.add("show");
-    }
+            <div style="margin-top:15px; background:#1e1b4b; padding:10px; border-radius:8px; border:1px solid #6366f1;">
+                <p style="margin:0; font-size:13px; color:#e0e7ff; text-align:center; font-weight:bold;">
+                    Send PKR ${amount} to this account to activate your plan.
+                </p>
+            </div>
+
+            <button id="closeVipModalBtn" style="width:100%; padding:12px; margin-top:15px; background:#0052ff; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Close</button>
+        </div>
+    `;
+    document.body.appendChild(vipModal);
+    
+    document.getElementById("closeVipModalBtn").onclick = () => {
+        vipModal.remove();
+    };
 }
 
 // Balance Show/Hide
@@ -535,7 +534,7 @@ if (themeBtn) {
     };
 }
 
-console.log("Eva Earning Part 6 Loaded & VIP Modal Ready");
+console.log("Eva Earning Part 6 Loaded & VIP Dynamic Modal Ready");
 
 /* =========================================
    PART 7 / 10: WITHDRAW ACTIVITY & HISTORY
