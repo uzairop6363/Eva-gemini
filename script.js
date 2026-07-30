@@ -40,7 +40,7 @@ window.addEventListener("load", () => {
 });
 
 // =========================
-// ELEMENTS
+// UI ELEMENTS
 // =========================
 
 const walletText = document.getElementById("wallet");
@@ -134,7 +134,7 @@ loadUser();
 console.log("Eva Earning Part 1 Loaded");
 
 /* =========================================
-   PART 2 / 10: LOGIN & REGISTER SYSTEM
+   PART 2 / 10: LOGIN & REGISTER SYSTEM (FIXED)
 ========================================= */
 
 const loginBtn = document.getElementById("loginBtn");
@@ -142,93 +142,134 @@ const loginModal = document.getElementById("loginModal");
 const loginSubmit = document.getElementById("loginSubmit");
 const closeModal = document.querySelector(".closeModal");
 
-const nameInput = document.getElementById("userName");
-const phoneInput = document.getElementById("userEmail");
-
-let passwordInput = document.getElementById("userPassword");
-if (!passwordInput && phoneInput) {
-    passwordInput = document.createElement("input");
-    passwordInput.type = "password";
-    passwordInput.id = "userPassword";
-    passwordInput.placeholder = "Password";
-    phoneInput.parentNode.insertBefore(passwordInput, phoneInput.nextSibling);
-}
-
+// Open Login Modal
 if (loginBtn) {
     loginBtn.onclick = () => {
         if (loginModal) loginModal.classList.add("show");
     };
 }
 
+// Close Modal
 if (closeModal) {
     closeModal.onclick = () => {
         if (loginModal) loginModal.classList.remove("show");
     };
 }
 
+// Switch between Login and Create Account
+let isRegisterMode = false;
+const modalTitle = document.querySelector("#loginModal h2, #loginModal h3, .modal-title");
+const modalSubtext = document.querySelector("#loginModal p, .modal-sub");
+
+// Delegate event to handle "Create Account" or "Already have account?" click
+document.addEventListener("click", (e) => {
+    if (e.target && (e.target.innerText.includes("Create Account") || e.target.id === "createAccLink")) {
+        e.preventDefault();
+        isRegisterMode = true;
+        
+        // Ensure Name Field exists
+        let nameField = document.getElementById("userName");
+        if (!nameField) {
+            const inputsContainer = document.querySelector("#loginModal input")?.parentElement || document.querySelector("#loginModal .modal-body");
+            if (inputsContainer) {
+                nameField = document.createElement("input");
+                nameField.type = "text";
+                nameField.id = "userName";
+                nameField.placeholder = "Enter Full Name";
+                nameField.style.cssText = "width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #ccc;";
+                inputsContainer.insertBefore(nameField, inputsContainer.firstChild);
+            }
+        } else {
+            nameField.style.display = "block";
+        }
+
+        if (modalTitle) modalTitle.innerText = "Register Account";
+        if (loginSubmit) loginSubmit.innerText = "Create Account";
+        e.target.innerText = "Already have an account? Login";
+        e.target.id = "loginAccLink";
+    } 
+    else if (e.target && (e.target.innerText.includes("Already have an account") || e.target.id === "loginAccLink")) {
+        e.preventDefault();
+        isRegisterMode = false;
+        
+        const nameField = document.getElementById("userName");
+        if (nameField) nameField.style.display = "none";
+
+        if (modalTitle) modalTitle.innerText = "Login";
+        if (loginSubmit) loginSubmit.innerText = "Login";
+        e.target.innerText = "Create Account";
+        e.target.id = "createAccLink";
+    }
+});
+
+// Submit Button Action (Login / Register)
 if (loginSubmit) {
     loginSubmit.onclick = async () => {
-        const name = nameInput ? nameInput.value.trim() : "";
-        const phone = phoneInput ? phoneInput.value.trim() : "";
-        const password = passwordInput ? passwordInput.value.trim() : "";
+        // Robust selector for input fields
+        const allInputs = document.querySelectorAll("#loginModal input");
+        let name = "", phone = "", password = "";
+
+        allInputs.forEach(input => {
+            const val = input.value.trim();
+            if (input.type === "password" || input.placeholder.toLowerCase().includes("password")) {
+                password = val;
+            } else if (input.id === "userName" || input.placeholder.toLowerCase().includes("name")) {
+                name = val;
+            } else if (input.type === "tel" || input.type === "number" || input.type === "text" || input.placeholder.toLowerCase().includes("mobile") || input.placeholder.toLowerCase().includes("phone") || input.id === "userEmail") {
+                if (!phone) phone = val;
+            }
+        });
 
         if (!phone || !password) {
-            showToast("Phone & Password Required");
+            showToast("⚠ Phone & Password Required");
             return;
         }
 
         try {
-            const loginResponse = await fetch("/api/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ phone, password })
-            });
+            if (isRegisterMode) {
+                if (!name) {
+                    showToast("⚠ Full Name Required");
+                    return;
+                }
+                const registerResponse = await fetch("/api/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, phone, password })
+                });
 
-            const loginData = await loginResponse.json();
+                const registerData = await registerResponse.json();
 
-            if (loginData.success) {
-                currentUser = loginData.user;
-                localStorage.setItem("user", JSON.stringify(currentUser));
-                if (loginModal) loginModal.classList.remove("show");
-                loadUser();
-                showToast("✅ Login Successful");
-                return;
-            }
-
-            if (!name) {
-                showToast("Name Required For New Account");
-                return;
-            }
-
-            const registerResponse = await fetch("/api/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, phone, password })
-            });
-
-            const registerData = await registerResponse.json();
-
-            if (registerData.success) {
-                showToast("✅ Account Created");
-                const autoLogin = await fetch("/api/login", {
+                if (registerData.success) {
+                    showToast("✅ Account Created Successfully");
+                    currentUser = registerData.user || { name, phone, wallet: 0, reward: 0, ads: 5, watchedAds: 0, plan: "FREE PLAN" };
+                    localStorage.setItem("user", JSON.stringify(currentUser));
+                    if (loginModal) loginModal.classList.remove("show");
+                    loadUser();
+                } else {
+                    showToast(registerData.message || "❌ Registration Failed");
+                }
+            } else {
+                const loginResponse = await fetch("/api/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ phone, password })
                 });
 
-                const userData = await autoLogin.json();
-                if (userData.success) {
-                    currentUser = userData.user;
+                const loginData = await loginResponse.json();
+
+                if (loginData.success) {
+                    currentUser = loginData.user;
                     localStorage.setItem("user", JSON.stringify(currentUser));
                     if (loginModal) loginModal.classList.remove("show");
                     loadUser();
+                    showToast("✅ Login Successful");
+                } else {
+                    showToast(loginData.message || "❌ Invalid Credentials");
                 }
-            } else {
-                showToast(registerData.message || "Register Failed");
             }
         } catch (error) {
             console.log(error);
-            showToast("❌ Server Error");
+            showToast("❌ Server Connection Error");
         }
     };
 }
@@ -423,21 +464,19 @@ if (withdrawBtn) {
 console.log("Eva Earning Part 5 Loaded");
 
 /* =========================================
-   PART 6 / 10: VIP PLAN ACTIVATION & MODAL (FIXED DYNAMIC PRICE)
+   PART 6 / 10: VIP PLAN ACTIVATION & MODAL
 ========================================= */
 
-// Bank Details Configuration
 const BANK_DETAILS = {
     bankName: "Telenor Microfinance Bank",
     accountTitle: "Shehroz Shehroz",
     accountNumber: "PK88TMFB0000000037817113"
 };
 
-// Target all VIP activation buttons
-const vipButtons = document.querySelectorAll(".buyVip, .activate-btn, [data-plan]");
-
-vipButtons.forEach(button => {
-    button.onclick = (e) => {
+// Global Listener for all Dynamic VIP Buttons
+document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".buyVip, .activate-btn, [data-plan]");
+    if (btn) {
         e.preventDefault();
 
         if (!currentUser) {
@@ -446,15 +485,11 @@ vipButtons.forEach(button => {
             return;
         }
 
-        // Get Plan Name
-        const selectedPlan = button.dataset.plan || button.getAttribute("data-plan") || "VIP 1";
-        
-        // Dynamic Price Detection Logic
-        let selectedPrice = button.dataset.price || button.getAttribute("data-price");
-        
+        const selectedPlan = btn.dataset.plan || btn.getAttribute("data-plan") || "VIP 1";
+        let selectedPrice = btn.dataset.price || btn.getAttribute("data-price");
+
         if (!selectedPrice) {
-            // Fallback: If price not in data-price attribute, search parent card text
-            const card = button.closest(".planCard") || button.closest(".card") || button.parentElement;
+            const card = btn.closest(".planCard") || btn.closest(".card") || btn.parentElement;
             if (card) {
                 const text = card.innerText;
                 if (text.includes("3,000") || text.includes("3000")) selectedPrice = "3,000";
@@ -467,14 +502,12 @@ vipButtons.forEach(button => {
         }
 
         openVipModal(selectedPlan, selectedPrice);
-    };
+    }
 });
 
 function openVipModal(planName, amount) {
-    let vipModal = document.getElementById("vipPaymentModal") || document.getElementById("paymentModal");
-    
-    // Always recreate or update modal contents dynamically
-    if (vipModal) vipModal.remove(); // Remove existing to force render with accurate prices
+    let vipModal = document.getElementById("vipPaymentModal");
+    if (vipModal) vipModal.remove();
 
     vipModal = document.createElement("div");
     vipModal.id = "vipPaymentModal";
@@ -534,7 +567,7 @@ if (themeBtn) {
     };
 }
 
-console.log("Eva Earning Part 6 Loaded & VIP Dynamic Modal Ready");
+console.log("Eva Earning Part 6 Loaded");
 
 /* =========================================
    PART 7 / 10: WITHDRAW ACTIVITY & HISTORY
@@ -626,29 +659,11 @@ window.addEventListener("load", () => {
     }
 });
 
-function clearLoginForm() {
-    const name = document.getElementById("userName");
-    const phone = document.getElementById("userEmail");
-    const password = document.getElementById("userPassword");
-
-    if (name) name.value = "";
-    if (phone) phone.value = "";
-    if (password) password.value = "";
-}
-
 console.log("Eva Earning Part 8 Loaded");
 
 /* =========================================
    PART 9 / 10: SECURITY & ERROR HANDLING
 ========================================= */
-
-async function safeJSON(response) {
-    try {
-        return await response.json();
-    } catch (error) {
-        return { success: false, message: "Invalid Server Response" };
-    }
-}
 
 function checkSession() {
     if (!currentUser) return;
@@ -663,12 +678,6 @@ setInterval(() => { checkSession(); }, 30000);
 
 window.addEventListener("offline", () => { showToast("⚠ Internet Connection Lost"); });
 window.addEventListener("online", () => { showToast("✅ Internet Connected"); });
-
-function disableButton(button, time = 2000) {
-    if (!button) return;
-    button.disabled = true;
-    setTimeout(() => { button.disabled = false; }, time);
-}
 
 console.log("Eva Earning Part 9 Loaded");
 
@@ -687,22 +696,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log("🚀 Eva Earning App Ready");
 });
-
-window.addEventListener("error", (event) => {
-    console.log("App Error:", event.message);
-});
-
-function resetEvaApp() {
-    localStorage.removeItem("user");
-    currentUser = null;
-    wallet = 0;
-    reward = 0;
-    ads = 5;
-    watched = 0;
-    plan = "FREE PLAN";
-
-    updateUI();
-    showToast("App Reset Successfully");
-}
 
 console.log("✅ Eva Earning Complete Script Loaded");
