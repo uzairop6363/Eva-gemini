@@ -18,7 +18,7 @@ export default async function handler(req, res) {
     const cleanToken = token.trim();
 
     try {
-        // 1. Fetch Existing Records
+        // 1. Get existing withdraws list
         const getRes = await fetch(`${cleanUrl}/get/withdraws`, {
             headers: { Authorization: `Bearer ${cleanToken}` }
         });
@@ -33,23 +33,22 @@ export default async function handler(req, res) {
             }
         }
 
-        // Add New Withdraw Request
+        // Add new withdraw
         withdraws.push(requestData);
 
-        // 2. Save Updated Array Back to Upstash REST API
-        // Upstash REST API accepts key-value directly in body array format
-        const setRes = await fetch(`${cleanUrl}/set/withdraws`, {
+        // 2. Upstash REST API POST Array Command (Correct Native Format)
+        const setRes = await fetch(`${cleanUrl}`, {
             method: 'POST',
             headers: { 
                 Authorization: `Bearer ${cleanToken}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(JSON.stringify(withdraws))
+            body: JSON.stringify(["SET", "withdraws", JSON.stringify(withdraws)])
         });
 
         const setData = await setRes.json();
 
-        if (setData && (setData.result === "OK" || setData.result)) {
+        if (setData && setData.result === "OK") {
             return res.status(200).json({ success: true, message: "Request Saved Successfully" });
         } else {
             return res.status(500).json({ 
