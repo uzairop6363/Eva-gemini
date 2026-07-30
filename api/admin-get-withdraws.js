@@ -6,12 +6,20 @@ export default async function handler(req, res) {
         return res.status(200).json({ success: true, withdraws: [] });
     }
 
+    const cleanUrl = url.trim().replace(/\/$/, "");
+    const cleanToken = token.trim();
+
     try {
-        const response = await fetch(`${url}/get/withdraws`, {
-            headers: { Authorization: `Bearer ${token}` }
+        const response = await fetch(`${cleanUrl}/get/withdraws`, {
+            headers: { Authorization: `Bearer ${cleanToken}` }
         });
         const data = await response.json();
-        const withdraws = data.result ? JSON.parse(data.result) : [];
+
+        let withdraws = [];
+        if (data && data.result) {
+            withdraws = typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+        }
+
         return res.status(200).json({ success: true, withdraws });
     } catch (e) {
         return res.status(500).json({ success: false, withdraws: [] });
