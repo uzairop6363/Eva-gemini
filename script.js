@@ -24,16 +24,10 @@ const app = document.getElementById("app");
 
 window.addEventListener("load", () => {
     setTimeout(() => {
-        if (splash) {
-            splash.style.opacity = "0";
-        }
+        if (splash) splash.style.opacity = "0";
         setTimeout(() => {
-            if (splash) {
-                splash.style.display = "none";
-            }
-            if (app) {
-                app.classList.remove("hidden");
-            }
+            if (splash) splash.style.display = "none";
+            if (app) app.classList.remove("hidden");
             loadUser();
         }, 500);
     }, 1000);
@@ -134,7 +128,7 @@ loadUser();
 console.log("Eva Earning Part 1 Loaded");
 
 /* =========================================
-   PART 2 / 10: LOGIN & REGISTER SYSTEM (FIXED)
+   PART 2 / 10: LOGIN & REGISTER SYSTEM
 ========================================= */
 
 const loginBtn = document.getElementById("loginBtn");
@@ -142,32 +136,25 @@ const loginModal = document.getElementById("loginModal");
 const loginSubmit = document.getElementById("loginSubmit");
 const closeModal = document.querySelector(".closeModal");
 
-// Open Login Modal
 if (loginBtn) {
     loginBtn.onclick = () => {
         if (loginModal) loginModal.classList.add("show");
     };
 }
 
-// Close Modal
 if (closeModal) {
     closeModal.onclick = () => {
         if (loginModal) loginModal.classList.remove("show");
     };
 }
 
-// Switch between Login and Create Account
 let isRegisterMode = false;
-const modalTitle = document.querySelector("#loginModal h2, #loginModal h3, .modal-title");
-const modalSubtext = document.querySelector("#loginModal p, .modal-sub");
 
-// Delegate event to handle "Create Account" or "Already have account?" click
 document.addEventListener("click", (e) => {
     if (e.target && (e.target.innerText.includes("Create Account") || e.target.id === "createAccLink")) {
         e.preventDefault();
         isRegisterMode = true;
         
-        // Ensure Name Field exists
         let nameField = document.getElementById("userName");
         if (!nameField) {
             const inputsContainer = document.querySelector("#loginModal input")?.parentElement || document.querySelector("#loginModal .modal-body");
@@ -183,6 +170,7 @@ document.addEventListener("click", (e) => {
             nameField.style.display = "block";
         }
 
+        const modalTitle = document.querySelector("#loginModal h2, #loginModal h3, .modal-title");
         if (modalTitle) modalTitle.innerText = "Register Account";
         if (loginSubmit) loginSubmit.innerText = "Create Account";
         e.target.innerText = "Already have an account? Login";
@@ -195,6 +183,7 @@ document.addEventListener("click", (e) => {
         const nameField = document.getElementById("userName");
         if (nameField) nameField.style.display = "none";
 
+        const modalTitle = document.querySelector("#loginModal h2, #loginModal h3, .modal-title");
         if (modalTitle) modalTitle.innerText = "Login";
         if (loginSubmit) loginSubmit.innerText = "Login";
         e.target.innerText = "Create Account";
@@ -202,10 +191,8 @@ document.addEventListener("click", (e) => {
     }
 });
 
-// Submit Button Action (Login / Register)
 if (loginSubmit) {
     loginSubmit.onclick = async () => {
-        // Robust selector for input fields
         const allInputs = document.querySelectorAll("#loginModal input");
         let name = "", phone = "", password = "";
 
@@ -384,22 +371,24 @@ if (watchBtn) {
 console.log("Eva Earning Part 4 Loaded");
 
 /* =========================================
-   PART 5 / 10: WITHDRAW SYSTEM
+   PART 5 / 10: WITHDRAW SYSTEM (STRICT & FIXED)
 ========================================= */
 
 const withdrawBtn = document.getElementById("withdrawBtn");
-const methodInput = document.getElementById("method");
-const withdrawName = document.getElementById("withdrawName");
-const withdrawPhone = document.getElementById("withdrawPhone");
-const withdrawAmount = document.getElementById("withdrawAmount");
 
 if (withdrawBtn) {
     withdrawBtn.onclick = async () => {
-        if (!currentUser) {
-            showToast("⚠ Please Login First");
+        // Strict Login Check
+        if (!currentUser || !currentUser.phone) {
+            showToast("⚠ Please Login First to Withdraw");
             if (loginModal) loginModal.classList.add("show");
             return;
         }
+
+        const methodInput = document.getElementById("method") || document.querySelector("select");
+        const withdrawName = document.getElementById("withdrawName") || document.querySelector("input[placeholder*='Title']");
+        const withdrawPhone = document.getElementById("withdrawPhone") || document.querySelector("input[placeholder*='Number']");
+        const withdrawAmount = document.getElementById("withdrawAmount") || document.querySelector("input[type='number']");
 
         const method = methodInput ? methodInput.value : "EasyPaisa";
         const name = withdrawName ? withdrawName.value.trim() : "";
@@ -407,17 +396,12 @@ if (withdrawBtn) {
         const amount = withdrawAmount ? Number(withdrawAmount.value) : 0;
 
         if (!name || !number || !amount) {
-            showToast("⚠ Fill All Details");
+            showToast("⚠ Fill All Withdrawal Details");
             return;
         }
 
         if (amount < 50) {
             showToast("⚠ Minimum Withdraw PKR 50");
-            return;
-        }
-
-        if (plan === "FREE PLAN" && amount > 50) {
-            showToast("⚠ Free Plan Limit PKR 50");
             return;
         }
 
@@ -432,6 +416,8 @@ if (withdrawBtn) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     phone: currentUser.phone,
+                    userPhone: currentUser.phone,
+                    user: currentUser.phone,
                     method: method,
                     name: name,
                     number: number,
@@ -450,7 +436,7 @@ if (withdrawBtn) {
                 if (withdrawPhone) withdrawPhone.value = "";
                 if (withdrawAmount) withdrawAmount.value = "";
 
-                showToast("✅ Withdraw Request Sent");
+                showToast("✅ Withdraw Request Sent Successfully");
             } else {
                 showToast(data.message || "Withdraw Failed");
             }
@@ -473,7 +459,6 @@ const BANK_DETAILS = {
     accountNumber: "PK88TMFB0000000037817113"
 };
 
-// Global Listener for all Dynamic VIP Buttons
 document.addEventListener("click", (e) => {
     const btn = e.target.closest(".buyVip, .activate-btn, [data-plan]");
     if (btn) {
