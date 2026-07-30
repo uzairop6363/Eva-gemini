@@ -10,16 +10,15 @@ export default async function handler(req, res) {
     if (!url || !token) {
         return res.status(500).json({ 
             success: false, 
-            message: "Database environment variables are missing on Vercel!" 
+            message: "Database environment variables missing" 
         });
     }
 
-    // Clean URL formatting
     const cleanUrl = url.trim().replace(/\/$/, "");
     const cleanToken = token.trim();
 
     try {
-        // Fetch current withdraws list
+        // 1. Get existing withdraws
         const getRes = await fetch(`${cleanUrl}/get/withdraws`, {
             headers: { Authorization: `Bearer ${cleanToken}` }
         });
@@ -34,22 +33,22 @@ export default async function handler(req, res) {
             }
         }
 
+        // Add new request
         withdraws.push(requestData);
 
-        // Save back to Upstash Redis
+        // 2. Save back to Upstash (Fixed API Payload)
         const setRes = await fetch(`${cleanUrl}/set/withdraws`, {
             method: 'POST',
             headers: { 
-                Authorization: `Bearer ${cleanToken}`,
-                'Content-Type': 'application/json'
+                Authorization: `Bearer ${cleanToken}`
             },
-            body: JSON.stringify(JSON.stringify(withdraws))
+            body: JSON.stringify(withdraws)
         });
 
         const setData = await setRes.json();
 
-        if (setData.result === "OK") {
-            return res.status(200).json({ success: true, message: "Saved to database!" });
+        if (setData && setData.result === "OK") {
+            return res.status(200).json({ success: true, message: "Request Saved" });
         } else {
             return res.status(500).json({ success: false, message: "Upstash save failed", raw: setData });
         }
