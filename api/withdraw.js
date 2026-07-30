@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     if (!url || !token) {
         return res.status(500).json({ 
             success: false, 
-            message: "Database environment variables missing" 
+            message: "Missing Environment Variables" 
         });
     }
 
@@ -18,7 +18,7 @@ export default async function handler(req, res) {
     const cleanToken = token.trim();
 
     try {
-        // 1. Get existing withdraws
+        // 1. Fetch Existing Records
         const getRes = await fetch(`${cleanUrl}/get/withdraws`, {
             headers: { Authorization: `Bearer ${cleanToken}` }
         });
@@ -33,24 +33,30 @@ export default async function handler(req, res) {
             }
         }
 
-        // Add new request
+        // Add New Withdraw Request
         withdraws.push(requestData);
 
-        // 2. Save back to Upstash (Fixed API Payload)
+        // 2. Save Updated Array Back to Upstash REST API
+        // Upstash REST API accepts key-value directly in body array format
         const setRes = await fetch(`${cleanUrl}/set/withdraws`, {
             method: 'POST',
             headers: { 
-                Authorization: `Bearer ${cleanToken}`
+                Authorization: `Bearer ${cleanToken}`,
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify(withdraws)
+            body: JSON.stringify(JSON.stringify(withdraws))
         });
 
         const setData = await setRes.json();
 
-        if (setData && setData.result === "OK") {
-            return res.status(200).json({ success: true, message: "Request Saved" });
+        if (setData && (setData.result === "OK" || setData.result)) {
+            return res.status(200).json({ success: true, message: "Request Saved Successfully" });
         } else {
-            return res.status(500).json({ success: false, message: "Upstash save failed", raw: setData });
+            return res.status(500).json({ 
+                success: false, 
+                message: "Upstash save failed", 
+                rawError: setData 
+            });
         }
     } catch (e) {
         return res.status(500).json({ success: false, message: e.message });
