@@ -42,8 +42,8 @@ function updateUI() {
     if (adsWatched) adsWatched.innerHTML = watched;
 
     if (currentUser) {
-        if (profileName) profileName.innerHTML = currentUser.name;
-        if (profileEmail) profileEmail.innerHTML = currentUser.phone;
+        if (profileName) profileName.innerHTML = currentUser.name || "User";
+        if (profileEmail) profileEmail.innerHTML = currentUser.phone || "N/A";
         if (profileWallet) profileWallet.innerHTML = "PKR " + wallet;
         if (profileRewards) profileRewards.innerHTML = "PKR " + reward;
         if (profileAds) profileAds.innerHTML = watched;
@@ -97,23 +97,23 @@ const closeRegisterModal = document.getElementById("closeRegisterModal");
 const openRegisterLink = document.getElementById("openRegisterLink");
 const openLoginLink = document.getElementById("openLoginLink");
 
-if (loginBtn) loginBtn.onclick = () => loginModal.classList.add("show");
-if (closeLoginModal) closeLoginModal.onclick = () => loginModal.classList.remove("show");
-if (closeRegisterModal) closeRegisterModal.onclick = () => registerModal.classList.remove("show");
+if (loginBtn) loginBtn.onclick = () => loginModal && loginModal.classList.add("show");
+if (closeLoginModal) closeLoginModal.onclick = () => loginModal && loginModal.classList.remove("show");
+if (closeRegisterModal) closeRegisterModal.onclick = () => registerModal && registerModal.classList.remove("show");
 
 if (openRegisterLink) {
     openRegisterLink.onclick = (e) => {
         e.preventDefault();
-        loginModal.classList.remove("show");
-        registerModal.classList.add("show");
+        if (loginModal) loginModal.classList.remove("show");
+        if (registerModal) registerModal.classList.add("show");
     };
 }
 
 if (openLoginLink) {
     openLoginLink.onclick = (e) => {
         e.preventDefault();
-        registerModal.classList.remove("show");
-        loginModal.classList.add("show");
+        if (registerModal) registerModal.classList.remove("show");
+        if (loginModal) loginModal.classList.add("show");
     };
 }
 
@@ -121,8 +121,16 @@ if (openLoginLink) {
 const loginSubmit = document.getElementById("loginSubmit");
 if (loginSubmit) {
     loginSubmit.onclick = async () => {
-        const phone = document.getElementById("loginPhone").value.trim();
-        const password = document.getElementById("loginPassword").value.trim();
+        const phoneEl = document.getElementById("loginPhone");
+        const passEl = document.getElementById("loginPassword");
+
+        if (!phoneEl || !passEl) {
+            showToast("⚠ Login Form Input Error");
+            return;
+        }
+
+        const phone = phoneEl.value.trim();
+        const password = passEl.value.trim();
 
         if (!phone || !password) {
             showToast("⚠ Phone & Password Required");
@@ -140,7 +148,7 @@ if (loginSubmit) {
             if (data.success) {
                 currentUser = data.user;
                 localStorage.setItem("user", JSON.stringify(currentUser));
-                loginModal.classList.remove("show");
+                if (loginModal) loginModal.classList.remove("show");
                 loadUser();
                 showToast("✅ Login Successful");
                 loadWithdrawHistory();
@@ -157,9 +165,18 @@ if (loginSubmit) {
 const registerSubmit = document.getElementById("registerSubmit");
 if (registerSubmit) {
     registerSubmit.onclick = async () => {
-        const name = document.getElementById("registerName").value.trim();
-        const phone = document.getElementById("registerPhone").value.trim();
-        const password = document.getElementById("registerPassword").value.trim();
+        const nameEl = document.getElementById("registerName");
+        const phoneEl = document.getElementById("registerPhone");
+        const passEl = document.getElementById("registerPassword");
+
+        if (!nameEl || !phoneEl || !passEl) {
+            showToast("⚠ Register Form Input Error");
+            return;
+        }
+
+        const name = nameEl.value.trim();
+        const phone = phoneEl.value.trim();
+        const password = passEl.value.trim();
 
         if (!name || !phone || !password) {
             showToast("⚠ Fill All Fields");
@@ -177,7 +194,7 @@ if (registerSubmit) {
             if (data.success) {
                 currentUser = data.user;
                 localStorage.setItem("user", JSON.stringify(currentUser));
-                registerModal.classList.remove("show");
+                if (registerModal) registerModal.classList.remove("show");
                 loadUser();
                 showToast("✅ Account Created Successfully!");
             } else {
@@ -189,20 +206,31 @@ if (registerSubmit) {
     };
 }
 
-// WITHDRAW SYSTEM WITH IP CAPTURE
+// WITHDRAW SYSTEM (FULLY ROBUST WITH DUAL-ID FALLBACK)
 const withdrawBtn = document.getElementById("withdrawBtn");
 if (withdrawBtn) {
     withdrawBtn.onclick = async () => {
         if (!currentUser) {
             showToast("⚠ Please Login First");
-            loginModal.classList.add("show");
+            if (loginModal) loginModal.classList.add("show");
             return;
         }
 
-        const method = document.getElementById("method").value;
-        const name = document.getElementById("withdrawName").value.trim();
-        const number = document.getElementById("withdrawPhone").value.trim();
-        const amount = Number(document.getElementById("withdrawAmount").value);
+        // Supporting multiple possible HTML Element IDs
+        const methodEl = document.getElementById("withdrawMethod") || document.getElementById("method");
+        const nameEl = document.getElementById("accountName") || document.getElementById("withdrawName");
+        const phoneEl = document.getElementById("accountNumber") || document.getElementById("withdrawPhone");
+        const amountEl = document.getElementById("withdrawAmount");
+
+        if (!methodEl || !nameEl || !phoneEl || !amountEl) {
+            alert("❌ HTML Form Error: Inputs Missing in DOM!");
+            return;
+        }
+
+        const method = methodEl.value;
+        const name = nameEl.value.trim();
+        const number = phoneEl.value.trim();
+        const amount = Number(amountEl.value);
 
         if (!name || !number || !amount) {
             showToast("⚠ Fill All Details");
@@ -219,13 +247,18 @@ if (withdrawBtn) {
             return;
         }
 
-        // Automatic IP Capture
+        // IP Fetching with 2-second Timeout
         let userIp = "127.0.0.1";
         try {
-            let ipRes = await fetch("https://api.ipify.org?format=json");
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            let ipRes = await fetch("https://api.ipify.org?format=json", { signal: controller.signal });
             let ipData = await ipRes.json();
             userIp = ipData.ip;
-        } catch (e) { console.log("IP Fetch Error", e); }
+            clearTimeout(timeoutId);
+        } catch (e) { 
+            console.log("IP Fetch Error/Timeout", e); 
+        }
 
         try {
             const response = await fetch("/api/withdraw", {
@@ -233,7 +266,7 @@ if (withdrawBtn) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     id: "REQ_" + Date.now(),
-                    registeredPhone: currentUser.phone,
+                    registeredPhone: currentUser.phone || "Guest",
                     method: method,
                     accountName: name,
                     accountNumber: number,
@@ -249,13 +282,17 @@ if (withdrawBtn) {
                 wallet -= amount;
                 saveUser();
                 updateUI();
-                document.getElementById("withdrawName").value = "";
-                document.getElementById("withdrawPhone").value = "";
-                document.getElementById("withdrawAmount").value = "";
+                nameEl.value = "";
+                phoneEl.value = "";
+                amountEl.value = "";
+                
+                const wModal = document.getElementById("withdrawModal");
+                if (wModal) wModal.style.display = "none";
+
                 showToast("✅ Withdraw Request Sent");
                 loadWithdrawHistory();
             } else {
-                showToast(data.message || "Withdraw Failed");
+                showToast("❌ " + (data.message || data.error || "Withdraw Failed"));
             }
         } catch (err) {
             showToast("❌ Server Connection Error");
@@ -271,7 +308,7 @@ if (watchBtn) {
     watchBtn.onclick = () => {
         if (!currentUser) {
             showToast("⚠ Please Login First");
-            loginModal.classList.add("show");
+            if (loginModal) loginModal.classList.add("show");
             return;
         }
         if (ads <= 0) {
@@ -354,7 +391,7 @@ async function loadWithdrawHistory() {
         if (!historyBox) return;
 
         if (!data.success || !data.withdraws || data.withdraws.length === 0) {
-            historyBox.innerHTML = `<div class="emptyHistory">No Withdraw History</div>`;
+            historyBox.innerHTML = `<div class="emptyHistory" style="padding:15px; text-align:center; color:#94a3b8;">No Withdraw History</div>`;
             return;
         }
 
@@ -362,14 +399,14 @@ async function loadWithdrawHistory() {
         data.withdraws.forEach(item => {
             let statusColor = item.status === 'Approved' ? '#10B981' : (item.status === 'Rejected' ? '#EF4444' : '#F59E0B');
             historyBox.innerHTML += `
-                <div class="historyCard">
+                <div class="historyCard" style="background:#1e293b; padding:12px; margin-bottom:8px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
                     <div>
                         <b>${item.method}</b>
-                        <p>${item.accountName} (${item.accountNumber})</p>
+                        <p style="font-size:12px; color:#94a3b8;">${item.accountName} (${item.accountNumber})</p>
                     </div>
                     <div style="text-align:right;">
-                        <h3>PKR ${item.amount}</h3>
-                        <span style="color:${statusColor}; font-weight:bold;">${item.status || 'Pending'}</span>
+                        <h4 style="color:#10b981; margin:0;">PKR ${item.amount}</h4>
+                        <span style="color:${statusColor}; font-weight:bold; font-size:12px;">${item.status || 'Pending'}</span>
                     </div>
                 </div>`;
         });
