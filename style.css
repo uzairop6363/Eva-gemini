@@ -1,0 +1,1342 @@
+/* =====================================
+   EVA EARNING STYLE CSS
+   PART 1/6
+===================================== */
+
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+
+body{
+
+    background:#f5f9ff;
+    color:#111827;
+    min-height:100vh;
+
+}
+
+
+
+button{
+
+    border:none;
+    cursor:pointer;
+    font-family:inherit;
+
+}
+
+
+
+.hidden{
+
+    display:none !important;
+
+}
+
+
+
+
+/* =========================
+   SPLASH SCREEN
+========================= */
+
+
+#splash{
+
+    position:fixed;
+    inset:0;
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #60a5fa
+    );
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+
+}
+
+
+
+.splashLogo{
+
+    text-align:center;
+    color:white;
+
+}
+
+
+
+.splashImage{
+
+    width:90px;
+    height:90px;
+    border-radius:25px;
+    object-fit:cover;
+    margin-bottom:20px;
+
+}
+
+
+
+.splashLogo h1{
+
+    font-size:32px;
+    font-weight:800;
+
+}
+
+
+
+.splashLogo p{
+
+    opacity:.9;
+    margin-top:5px;
+
+}
+
+
+
+
+.loading{
+
+    width:220px;
+    height:8px;
+    background:rgba(255,255,255,.3);
+    border-radius:20px;
+    overflow:hidden;
+    margin:30px auto 15px;
+
+}
+
+
+
+.loadingBar{
+
+    height:100%;
+    width:40%;
+    background:white;
+    border-radius:20px;
+    animation:loading 5s infinite;
+
+}
+
+
+
+@keyframes loading{
+
+    from{
+        width:0%;
+    }
+
+
+    to{
+        width:100%;
+    }
+
+}
+
+
+
+
+.version{
+
+    font-size:12px;
+    opacity:.8;
+
+}
+
+
+
+
+
+/* =========================
+   APP HEADER
+========================= */
+
+
+#app{
+
+    padding-bottom:90px;
+
+}
+
+
+
+header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px;
+
+}
+
+
+
+.brand{
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+}
+
+
+
+.headerLogo{
+
+    width:48px;
+    height:48px;
+    border-radius:14px;
+
+}
+
+
+
+.brand h2{
+
+    font-size:20px;
+
+}
+
+
+
+.brand small{
+
+    color:#6b7280;
+
+}
+
+
+
+
+.headerIcons{
+
+    display:flex;
+    gap:10px;
+
+}
+
+
+
+.headerIcons button{
+
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:white;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+} /* =====================================
+   PART 2/6
+   CARDS + DASHBOARD
+===================================== */
+
+
+/* ACTIVITY BAR */
+
+.activityBar{
+
+    margin:0 16px 15px;
+    padding:12px 15px;
+    background:white;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    box-shadow:0 8px 25px rgba(0,0,0,.06);
+    overflow:hidden;
+
+}
+
+
+.activityBar marquee{
+
+    color:#374151;
+    font-size:14px;
+
+}
+
+
+.green{
+
+    color:#16a34a;
+
+}
+
+
+
+/* WALLET CARD */
+
+
+.walletCard{
+
+    margin:16px;
+    padding:20px;
+    border-radius:25px;
+    color:white;
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #60a5fa
+    );
+    box-shadow:0 15px 35px rgba(37,99,235,.3);
+
+}
+
+
+
+.walletTop{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+}
+
+
+
+.walletTop p{
+
+    opacity:.85;
+    font-size:14px;
+
+}
+
+
+
+.walletTop h1{
+
+    margin-top:8px;
+    font-size:34px;
+
+}
+
+
+
+#toggleBalance{
+
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    background:rgba(255,255,255,.2);
+    color:white;
+
+}
+
+
+
+.walletBottom{
+
+    margin-top:25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+}
+
+
+
+.plan{
+
+    background:rgba(255,255,255,.2);
+    padding:8px 15px;
+    border-radius:30px;
+    font-size:13px;
+
+}
+
+
+
+.walletChip{
+
+    width:45px;
+    height:45px;
+    border-radius:15px;
+    background:white;
+    color:#2563eb;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+}
+
+
+
+
+
+/* STATS GRID */
+
+
+.statsGrid{
+
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+    padding:0 16px;
+
+}
+
+
+
+.stat{
+
+    background:white;
+    padding:18px;
+    border-radius:20px;
+    box-shadow:0 8px 25px rgba(0,0,0,.05);
+
+}
+
+
+
+.stat span{
+
+    color:#2563eb;
+    font-size:28px;
+
+}
+
+
+
+.stat p{
+
+    margin-top:10px;
+    color:#6b7280;
+    font-size:13px;
+
+}
+
+
+
+.stat h2{
+
+    margin-top:8px;
+    font-size:22px;
+
+}
+
+
+
+
+
+/* WATCH CARD */
+
+
+.watchCard{
+
+    margin:16px;
+    background:white;
+    border-radius:25px;
+    padding:22px;
+    text-align:center;
+    box-shadow:0 8px 25px rgba(0,0,0,.06);
+
+}
+
+
+
+.watchCard h3{
+
+    font-size:22px;
+
+}
+
+
+
+.watchCard p{
+
+    margin:12px 0;
+    color:#6b7280;
+
+}
+
+
+
+.watchCard strong{
+
+    color:#2563eb;
+
+}
+
+
+
+#watchAd{
+
+    width:100%;
+    padding:15px;
+    border-radius:15px;
+    background:#2563eb;
+    color:white;
+    font-size:16px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+
+}
+
+
+
+#timer{
+
+    margin-top:15px;
+    font-weight:700;
+    color:#2563eb;
+
+}/* =====================================
+   PART 3/6
+   VIP + WITHDRAW + PROFILE
+===================================== */
+
+
+/* PAGE SYSTEM */
+
+
+.page{
+
+    display:none;
+
+}
+
+
+
+.page.active{
+
+    display:block;
+
+}
+
+
+
+.pageTitle{
+
+    padding:16px;
+    font-size:25px;
+
+}
+
+
+
+.pageSubTitle{
+
+    padding:0 16px;
+    color:#6b7280;
+    margin-bottom:15px;
+
+}
+
+
+
+
+
+/* VIP CARDS */
+
+
+.vipGrid{
+
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+
+}
+
+
+
+.vipCard{
+
+    background:white;
+    padding:22px;
+    border-radius:25px;
+    box-shadow:0 8px 25px rgba(0,0,0,.06);
+    position:relative;
+
+}
+
+
+
+.vipCard.premium{
+
+    border:2px solid #2563eb;
+
+}
+
+
+
+.popularTag{
+
+    position:absolute;
+    top:15px;
+    right:15px;
+    background:#2563eb;
+    color:white;
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:11px;
+
+}
+
+
+
+.vipBadge{
+
+    font-size:22px;
+    font-weight:800;
+    color:#2563eb;
+
+}
+
+
+
+.vipPrice{
+
+    font-size:28px;
+    font-weight:800;
+    margin:15px 0;
+
+}
+
+
+
+.vipCard ul{
+
+    list-style:none;
+    line-height:2;
+    color:#4b5563;
+
+}
+
+
+
+.buyVip{
+
+    width:100%;
+    padding:14px;
+    margin-top:15px;
+    border-radius:15px;
+    background:#2563eb;
+    color:white;
+    font-size:16px;
+
+}
+
+
+
+
+
+
+/* GLASS CARD */
+
+
+.glassCard{
+
+    margin:16px;
+    padding:20px;
+    background:white;
+    border-radius:25px;
+    box-shadow:0 8px 25px rgba(0,0,0,.06);
+
+}
+
+
+
+.glassCard label{
+
+    display:block;
+    margin-top:15px;
+    font-size:14px;
+    color:#6b7280;
+
+}
+
+
+
+.glassCard input,
+.glassCard select{
+
+    width:100%;
+    padding:14px;
+    margin-top:8px;
+    border-radius:14px;
+    border:1px solid #e5e7eb;
+    outline:none;
+    font-size:15px;
+
+}
+
+
+
+#withdrawBtn{
+
+    width:100%;
+    margin-top:20px;
+    padding:15px;
+    background:#2563eb;
+    color:white;
+    border-radius:15px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+
+}
+
+
+
+.limitCard{
+
+    margin-top:18px;
+    padding:14px;
+    background:#eff6ff;
+    border-radius:15px;
+    display:flex;
+    gap:10px;
+    align-items:center;
+
+}
+
+
+
+.limitCard span{
+
+    color:#2563eb;
+
+}
+
+
+
+
+
+/* PROFILE */
+
+
+.profileCard{
+
+    margin:16px;
+    padding:25px;
+    background:white;
+    border-radius:25px;
+    text-align:center;
+    box-shadow:0 8px 25px rgba(0,0,0,.06);
+
+}
+
+
+
+.avatar{
+
+    width:85px;
+    height:85px;
+    border-radius:50%;
+    object-fit:cover;
+
+}
+
+
+
+.profileStats{
+
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-top:25px;
+
+}
+
+
+
+.profileStats div{
+
+    background:#f8fafc;
+    padding:15px;
+    border-radius:18px;
+
+}
+
+
+
+.profileStats p{
+
+    color:#6b7280;
+    font-size:13px;
+
+}
+
+
+
+#logoutBtn{
+
+    margin-top:20px;
+    width:100%;
+    padding:14px;
+    border-radius:15px;
+    background:#ef4444;
+    color:white;
+
+}/* =====================================
+   PART 4/6
+   LOGIN MODAL + NAVIGATION
+===================================== */
+
+
+
+/* BOTTOM NAVIGATION */
+
+
+.bottomNav{
+
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    height:75px;
+    background:white;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    box-shadow:0 -5px 25px rgba(0,0,0,.08);
+    z-index:100;
+
+}
+
+
+
+.navItem{
+
+    background:none;
+    color:#6b7280;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+    font-size:12px;
+
+}
+
+
+
+.navItem span:first-child{
+
+    font-size:25px;
+
+}
+
+
+
+.navItem.active{
+
+    color:#2563eb;
+
+}
+
+
+
+
+
+/* LOGIN MODAL */
+
+
+.modal{
+
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+
+}
+
+
+
+.modal.show{
+
+    display:flex;
+
+}
+
+
+
+.modalBox{
+
+    width:90%;
+    max-width:380px;
+    background:white;
+    border-radius:25px;
+    padding:25px;
+    position:relative;
+    box-shadow:0 20px 50px rgba(0,0,0,.2);
+
+}
+
+
+
+.modalBox h2{
+
+    text-align:center;
+    margin-bottom:20px;
+
+}
+
+
+
+.closeModal{
+
+    position:absolute;
+    right:15px;
+    top:10px;
+    background:none;
+    font-size:28px;
+    color:#6b7280;
+
+}
+
+
+
+.modalBox input{
+
+    width:100%;
+    padding:15px;
+    margin-bottom:12px;
+    border-radius:15px;
+    border:1px solid #e5e7eb;
+    outline:none;
+    font-size:15px;
+
+}
+
+
+
+#loginSubmit{
+
+    width:100%;
+    padding:15px;
+    border-radius:15px;
+    background:#2563eb;
+    color:white;
+    font-size:16px;
+    margin-top:10px;
+
+}
+
+
+
+
+
+/* WITHDRAW HISTORY */
+
+
+.historyCard{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#f8fafc;
+    padding:15px;
+    border-radius:18px;
+    margin-top:12px;
+
+}
+
+
+
+.historyCard p{
+
+    color:#6b7280;
+    font-size:13px;
+
+}
+
+
+
+.historyCard h3{
+
+    color:#2563eb;
+
+}
+
+
+
+.historyCard span{
+
+    font-size:12px;
+    color:#f59e0b;
+
+}
+
+
+
+.emptyHistory{
+
+    text-align:center;
+    padding:20px;
+    color:#6b7280;
+
+}/* =====================================
+   PART 5/6
+   TOAST + ANIMATIONS + DARK MODE
+===================================== */
+
+
+
+/* TOAST MESSAGE */
+
+
+.evaToast{
+
+    position:fixed;
+    bottom:95px;
+    left:50%;
+    transform:translateX(-50%) translateY(30px);
+    background:#111827;
+    color:white;
+    padding:14px 22px;
+    border-radius:30px;
+    font-size:14px;
+    opacity:0;
+    transition:.3s;
+    z-index:9999;
+    max-width:90%;
+    text-align:center;
+
+}
+
+
+
+.evaToast.show{
+
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+
+}
+
+
+
+
+
+/* BUTTON EFFECTS */
+
+
+button{
+
+    transition:.2s ease;
+
+}
+
+
+
+button:active{
+
+    transform:scale(.96);
+
+}
+
+
+
+
+
+/* CARD ANIMATION */
+
+
+.walletCard,
+.stat,
+.watchCard,
+.vipCard,
+.glassCard,
+.profileCard{
+
+    animation:fadeUp .4s ease;
+
+}
+
+
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+        transform:translateY(15px);
+
+    }
+
+
+    to{
+
+        opacity:1;
+        transform:translateY(0);
+
+    }
+
+}
+
+
+
+
+
+/* DARK MODE */
+
+
+.darkMode{
+
+    background:#0f172a;
+    color:white;
+
+}
+
+
+
+.darkMode header small,
+.darkMode .pageSubTitle,
+.darkMode .stat p,
+.darkMode .watchCard p{
+
+    color:#cbd5e1;
+
+}
+
+
+
+.darkMode .stat,
+.darkMode .watchCard,
+.darkMode .vipCard,
+.darkMode .glassCard,
+.darkMode .profileCard,
+.darkMode .activityBar,
+.darkMode .modalBox,
+.darkMode .bottomNav{
+
+    background:#1e293b;
+    color:white;
+
+}
+
+
+
+.darkMode input,
+.darkMode select{
+
+    background:#334155;
+    color:white;
+    border-color:#475569;
+
+}
+
+
+
+.darkMode .profileStats div{
+
+    background:#334155;
+
+}
+
+
+
+
+/* RESPONSIVE */
+
+
+@media(max-width:360px){
+
+
+.walletTop h1{
+
+    font-size:28px;
+
+}
+
+
+
+.statsGrid{
+
+    gap:10px;
+
+}
+
+
+
+.stat{
+
+    padding:14px;
+
+}
+
+
+}/* =====================================
+   PART 6/6
+   FINAL POLISH + MOBILE APP FEEL
+===================================== */
+
+
+/* SMOOTH SCROLL */
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+
+
+body{
+
+    overflow-x:hidden;
+
+}
+
+
+
+/* REMOVE DEFAULT MARQUEE LOOK */
+
+.activityBar{
+
+    white-space:nowrap;
+
+}
+
+
+
+/* SELECT OPTION STYLE */
+
+select{
+
+    appearance:none;
+
+}
+
+
+
+/* SUPPORT BUTTON */
+
+.glassCard button{
+
+    width:100%;
+    padding:14px;
+    border-radius:15px;
+    background:#2563eb;
+    color:white;
+    font-size:15px;
+
+}
+
+
+
+/* ICON ALIGNMENT */
+
+.material-symbols-rounded{
+
+    vertical-align:middle;
+
+}
+
+
+
+/* DISABLED BUTTON */
+
+button:disabled{
+
+    opacity:.6;
+    cursor:not-allowed;
+
+}
+
+
+
+/* MOBILE SPACING */
+
+@media(max-width:480px){
+
+
+header{
+
+    padding:15px;
+
+}
+
+
+
+.brand h2{
+
+    font-size:18px;
+
+}
+
+
+
+.walletCard{
+
+    margin:14px;
+
+}
+
+
+
+.walletTop h1{
+
+    font-size:30px;
+
+}
+
+
+
+.pageTitle{
+
+    font-size:22px;
+
+}
+
+
+
+.bottomNav{
+
+    height:70px;
+
+}
+
+
+}
+
+
+
+/* PREMIUM SHADOW */
+
+.walletCard,
+.vipCard,
+.watchCard,
+.glassCard,
+.profileCard,
+.stat{
+
+    border:1px solid rgba(255,255,255,.5);
+
+}
+
+
+
+/* IMAGE FALLBACK */
+
+img{
+
+    max-width:100%;
+
+}
+
+
+
+/* HIDE EMPTY TOAST */
+
+#toast:empty{
+
+    display:none;
+
+}
