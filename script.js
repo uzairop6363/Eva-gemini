@@ -61,11 +61,11 @@ function updateUI() {
 
     if (currentUser) {
         if (profileName) profileName.innerHTML = currentUser.name || "User";
-        if (profileEmail) profileEmail.innerHTML = currentUser.phone || "";
+        if (profileEmail) profileEmail.innerHTML = currentUser.phone || currentUser.userPhone || "";
         if (profileWallet) profileWallet.innerHTML = "PKR " + wallet;
         if (profileRewards) profileRewards.innerHTML = "PKR " + reward;
         if (profileAds) profileAds.innerHTML = watched;
-        if (profilePlan) profilePlan.innerHTML = plan;
+        if (profilePlan) profilePlan.innerHTML = currentUser.plan || plan;
     } else {
         if (profileName) profileName.innerHTML = "Guest User";
         if (profileEmail) profileEmail.innerHTML = "Login Required";
@@ -82,8 +82,8 @@ function loadUser() {
         return;
     }
 
-    wallet = currentUser.wallet || 0;
-    reward = currentUser.reward || 0;
+    wallet = Number(currentUser.wallet) || 0;
+    reward = Number(currentUser.reward) || 0;
     ads = currentUser.ads !== undefined ? currentUser.ads : 5;
     watched = currentUser.watchedAds || 0;
     plan = currentUser.plan || "FREE PLAN";
@@ -111,12 +111,15 @@ async function saveUser() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                phone: currentUser.phone,
+                phone: currentUser.phone || currentUser.userPhone,
+                userPhone: currentUser.phone || currentUser.userPhone,
+                registeredPhone: currentUser.phone || currentUser.userPhone,
                 wallet: wallet,
                 reward: reward,
                 ads: ads,
                 watchedAds: watched,
-                plan: plan
+                plan: plan,
+                lastWithdrawDate: currentUser.lastWithdrawDate || ""
             })
         });
     } catch (error) {
@@ -228,7 +231,9 @@ if (loginSubmit) {
 
                 if (registerData.success) {
                     showToast("✅ Account Created Successfully");
-                    currentUser = registerData.user || { name, phone, wallet: 0, reward: 0, ads: 5, watchedAds: 0, plan: "FREE PLAN" };
+                    currentUser = registerData.user || { name, phone, userPhone: phone, registeredPhone: phone, wallet: 0, reward: 0, ads: 5, watchedAds: 0, plan: "FREE PLAN" };
+                    if (!currentUser.phone) currentUser.phone = phone;
+                    if (!currentUser.userPhone) currentUser.userPhone = phone;
                     localStorage.setItem("user", JSON.stringify(currentUser));
                     if (loginModal) loginModal.classList.remove("show");
                     loadUser();
@@ -246,6 +251,10 @@ if (loginSubmit) {
 
                 if (loginData.success) {
                     currentUser = loginData.user;
+                    if (!currentUser.phone) currentUser.phone = phone;
+                    if (!currentUser.userPhone) currentUser.userPhone = phone;
+                    if (!currentUser.registeredPhone) currentUser.registeredPhone = phone;
+                    
                     localStorage.setItem("user", JSON.stringify(currentUser));
                     if (loginModal) loginModal.classList.remove("show");
                     loadUser();
@@ -371,15 +380,17 @@ if (watchBtn) {
 console.log("Eva Earning Part 4 Loaded");
 
 /* =========================================
-   PART 5 / 10: WITHDRAW SYSTEM (STRICT & FIXED)
+   PART 5 / 10: WITHDRAW SYSTEM (STRICT FREE PLAN & DAILY LIMIT)
 ========================================= */
 
 const withdrawBtn = document.getElementById("withdrawBtn");
 
 if (withdrawBtn) {
     withdrawBtn.onclick = async () => {
-        // Strict Login Check
-        if (!currentUser || !currentUser.phone) {
+        const activeUserPhone = currentUser ? (currentUser.phone || currentUser.userPhone || currentUser.registeredPhone) : null;
+
+        // 1. Strict Login Check
+        if (!currentUser || !activeUserPhone) {
             showToast("⚠ Please Login First to Withdraw");
             if (loginModal) loginModal.classList.add("show");
             return;
@@ -395,33 +406,62 @@ if (withdrawBtn) {
         const number = withdrawPhone ? withdrawPhone.value.trim() : "";
         const amount = withdrawAmount ? Number(withdrawAmount.value) : 0;
 
-        if (!name || !number || !amount) {
+        // 2. Form Input Validations
+        if (!name || !number || !amount || isNaN(amount)) {
             showToast("⚠ Fill All Withdrawal Details");
             return;
         }
 
-        if (amount < 50) {
-            showToast("⚠ Minimum Withdraw PKR 50");
+        if (amount <= 0) {
+            showToast("⚠ Invalid Amount");
             return;
         }
 
+        const currentPlan = (currentUser.plan || plan || "FREE PLAN").toUpperCase();
+        const todayDate = new Date().toDateString();
+
+        // 3. FREE PLAN CHECKS
+        if (currentPlan.includes("FREE")) {
+            // Check if user already withdrew today
+            if (currentUser.lastWithdrawDate === todayDate) {
+                showToast("⚠ Daily limit reached! Try again tomorrow");
+                return;
+            }
+
+            // Check if amount exceeds 50 PKR
+            if (amount > 50) {
+                showToast("⚠ Daily limit 50 free plan");
+                return;
+            }
+        }
+
+        // 4. Wallet Balance Check
         if (wallet < amount) {
-            showToast("❌ Insufficient Balance");
+            showToast("❌ Insufficient Wallet Balance");
             return;
         }
+
+        // Formatted Date for Admin Panel
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString('en-GB') + ", " + now.toLocaleTimeString();
 
         try {
             const response = await fetch("/api/withdraw", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    phone: currentUser.phone,
-                    userPhone: currentUser.phone,
-                    user: currentUser.phone,
-                    method: method,
+                    phone: activeUserPhone,
+                    userPhone: activeUserPhone,
+                    registeredPhone: activeUserPhone,
+                    user: activeUserPhone,
+                    accountName: name,
                     name: name,
+                    accountNumber: number,
                     number: number,
-                    amount: amount
+                    method: method,
+                    amount: amount,
+                    date: formattedDate,
+                    timestamp: Date.now()
                 })
             });
 
@@ -429,6 +469,10 @@ if (withdrawBtn) {
 
             if (data.success) {
                 wallet -= amount;
+
+                // Save last withdraw date
+                currentUser.lastWithdrawDate = todayDate;
+
                 saveUser();
                 updateUI();
 
@@ -579,9 +623,11 @@ startActivity();
 
 async function loadWithdrawHistory() {
     if (!currentUser) return;
+    const phone = currentUser.phone || currentUser.userPhone || currentUser.registeredPhone;
+    if (!phone) return;
 
     try {
-        const response = await fetch(`/api/withdraw-history?phone=${currentUser.phone}`);
+        const response = await fetch(`/api/withdraw-history?phone=${phone}`);
         const data = await response.json();
         const historyBox = document.getElementById("withdrawHistory");
 
@@ -598,11 +644,11 @@ async function loadWithdrawHistory() {
                 <div class="historyCard">
                     <div>
                         <b>${item.method}</b>
-                        <p>${item.name}</p>
+                        <p>${item.name || item.accountName || ""}</p>
                     </div>
                     <div>
                         <h3>PKR ${item.amount}</h3>
-                        <span>${item.status}</span>
+                        <span>${item.status || "Pending"}</span>
                     </div>
                 </div>
             `;
@@ -622,11 +668,11 @@ function refreshProfile() {
     if (!currentUser) return;
 
     if (profileName) profileName.innerHTML = currentUser.name || "User";
-    if (profileEmail) profileEmail.innerHTML = currentUser.phone || "";
+    if (profileEmail) profileEmail.innerHTML = currentUser.phone || currentUser.userPhone || "";
     if (profileWallet) profileWallet.innerHTML = "PKR " + wallet;
     if (profileRewards) profileRewards.innerHTML = "PKR " + reward;
     if (profileAds) profileAds.innerHTML = watched;
-    if (profilePlan) profilePlan.innerHTML = plan;
+    if (profilePlan) profilePlan.innerHTML = currentUser.plan || plan;
 }
 
 function afterLogin() {
