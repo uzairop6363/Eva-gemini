@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Eva Earning</title>
+
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" href="assets/logo.png">
+
+<link rel="apple-touch-icon" href="assets/logo.png">
+
+<link rel="stylesheet" href="style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded" rel="stylesheet">
+
+</head>
+
+<body>
+
+<!-- SPLASH -->
+
+<div id="splash">
+
+<div class="splashLogo">
+
+<img src="assets/logo.png" class="splashImage">
+
+<h1>Eva Earning</h1>
+
+<p>Smart Rewards</p>
+
+<div class="loading">
+
+<div class="loadingBar"></div>
+
+</div>
+
+<span class="version">
+Version 2.0
+</span>
+
+</div>
+
+</div>
+
+<!-- APP -->
+
+<div id="app" class="hidden">
+
+<header>
+
+<div class="brand">
+
+<img src="assets/logo.png" class="headerLogo">
+
+<div>
+
+<h2>Eva Earning</h2>
+
+<small>Smart Rewards</small>
+
+</div>
+
+</div>
+
+<div class="headerIcons">
+
+<button id="themeBtn">
+
+<span class="material-symbols-rounded">
+dark_mode
+</span>
+
+</button>
+
+<button id="loginBtn" title="Login">
+
+<span class="material-symbols-rounded">
+person
+</span>
+
+</button>
+
+</div>
+
+</header>
+
+<div class="activityBar">
+
+<span class="material-symbols-rounded green">
+verified
+</span>
+
+<marquee id="activityText">
+
+Loading Activity...
+
+</marquee>
+
+</div>
+
+<section id="homePage" class="page active">
+
+<div class="walletCard">
+
+<div class="walletTop">
+
+<div>
+
+<p>Available Balance</p>
+
+<h1 id="wallet">
+PKR 0
+</h1>
+
+</div>
+
+<button id="toggleBalance">
+
+<span class="material-symbols-rounded">
+visibility
+</span>
+
+</button>
+
+</div>
+
+<div class="walletBottom">
+
+<div class="plan" id="currentPlan">
+
+FREE PLAN
+
+</div>
+
+<div class="walletChip">
+
+<span class="material-symbols-rounded">
+account_balance_wallet
+</span>
+
+</div>
+
+</div>
+
+</div><!-- STATS -->
+
+<div class="statsGrid">
+
+<div class="stat">
+
+<span class="material-symbols-rounded">
+paid
+</span>
+
+<p>Today's Reward</p>
+
+<h2 id="todayReward">
+0
+</h2>
+
+</div>
+
+<div class="stat">
+
+<span class="material-symbols-rounded">
+play_circle
+</span>
+
+<p>Ads Left</p>
+
+<h2 id="adsLeft">
+5
+</h2>
+
+</div>
+
+<div class="stat">
+
+<span class="material-symbols-rounded">
+task_alt
+</span>
+
+<p>Ads Watched</p>
+
+<h2 id="adsWatched">
+0
+</h2>
+
+</div>
+
+<div class="stat">
+
+<span class="material-symbols-rounded">
+payments
+</span>
+
+<p>Daily Limit</p>
+
+<h2 id="dailyLimit">
+PKR 50
+</h2>
+
+</div>
+
+</div>
+
+<!-- WATCH AD -->
+
+<div class="watchCard">
+
+<h3>
+Rewarded Advertisement
+</h3>
+
+<p>
+
+Watch one advertisement and receive
+
+<strong>
+PKR 100
+</strong>
+
+reward instantly.
+
+</p>
+
+<button id="watchAd">
+
+<span class="material-symbols-rounded">
+smart_display
+</span>
+
+Watch Ad
+
+</button>
+
+<div id="timer"></div>
+
+</div>
+
+</section>
+
+<!-- VIP PAGE -->
+
+<section id="vipPage" class="page">
+
+<h2 class="pageTitle">
+💎 VIP Membership
+</h2>
+
+<p class="pageSubTitle">
+
+Upgrade your account to unlock premium rewards.
+
+</p>
+
+<div class="vipGrid">
+
+<div class="vipCard">
+
+<div class="vipBadge">
+VIP 1
+</div>
+
+<div class="vipPrice">
+PKR 2,000
+</div>
+
+<ul>
+
+<li>✅ 10 Ads Daily</li>
+
+<li>✅ Unlimited Withdraw</li>
+
+<li>✅ Premium Support</li>
+
+</ul>
+
+<button class="buyVip" data-plan="VIP 1">
+
+Activate VIP 1
+
+</button>
+
+</div><div class="vipCard premium">
+
+<div class="popularTag">
+MOST POPULAR
+</div>
+
+<div class="vipBadge">
+VIP 2
+</div>
+
+<div class="vipPrice">
+PKR 3,000
+</div>
+
+<ul>
+
+<li>✅ 20 Ads Daily</li>
+
+<li>✅ Unlimited Withdraw</li>
+
+<li>✅ Premium Dashboard</li>
+
+<li>✅ Faster Rewards</li>
+
+</ul>
+
+<button class="buyVip" data-plan="VIP 2">
+
+Activate VIP 2
+
+</button>
+
+</div>
+
+<div class="vipCard diamond">
+
+<div class="vipBadge">
+VIP 3
+</div>
+
+<div class="vipPrice">
+PKR 5,000
+</div>
+
+<ul>
+
+<li>✅ 70 Ads Daily</li>
+
+<li>✅ Unlimited Withdraw</li>
+
+<li>✅ Diamond Badge</li>
+
+<li>✅ Exclusive Benefits</li>
+
+</ul>
+
+<button class="buyVip" data-plan="VIP 3">
+
+Activate VIP 3
+
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- WITHDRAW PAGE -->
+
+<section id="withdrawPage" class="page">
+
+<h2 class="pageTitle">
+💸 Withdraw
+</h2>
+
+<p class="pageSubTitle">
+
+Submit your withdrawal request.
+
+</p>
+
+<div class="glassCard">
+
+<label>
+Withdrawal Method
+</label>
+
+<select id="method">
+
+<option>EasyPaisa</option>
+
+<option>JazzCash</option>
+
+</select>
+
+<label>
+Full Name
+</label>
+
+<input
+type="text"
+id="withdrawName"
+placeholder="Enter Full Name">
+
+<label>
+Account Number
+</label>
+
+<input
+type="tel"
+id="withdrawPhone"
+placeholder="03XXXXXXXXX">
+
+<label>
+Amount
+</label>
+
+<input
+type="number"
+id="withdrawAmount"
+placeholder="Minimum 50"><div class="limitCard">
+
+<span class="material-symbols-rounded">
+info
+</span>
+
+<div>
+
+<b>
+Withdrawal Limit
+</b>
+
+<p>
+Free Plan: PKR 50 / 24 Hours
+</p>
+
+</div>
+
+</div>
+
+<button id="withdrawBtn">
+
+<span class="material-symbols-rounded">
+payments
+</span>
+
+Submit Request
+
+</button>
+
+</div>
+
+<div class="glassCard">
+
+<h3>
+Withdraw History
+</h3>
+
+<div id="withdrawHistory">
+
+<div class="emptyHistory">
+
+No Withdraw History
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- PROFILE PAGE -->
+
+<section id="profilePage" class="page">
+
+<h2 class="pageTitle">
+👤 My Profile
+</h2>
+
+<div class="profileCard">
+
+<img
+src="assets/avatar.png"
+class="avatar">
+
+<h2 id="profileName">
+
+Guest User
+
+</h2>
+
+<p id="profileEmail">
+
+Login Required
+
+</p>
+
+<div class="profileStats">
+
+<div>
+
+<h3 id="profileWallet">
+PKR 0
+</h3>
+
+<p>
+Wallet
+</p>
+
+</div>
+
+<div>
+
+<h3 id="profileRewards">
+PKR 0
+</h3>
+
+<p>
+Rewards
+</p>
+
+</div>
+
+<div>
+
+<h3 id="profileAds">
+0
+</h3>
+
+<p>
+Ads Watched
+</p>
+
+</div>
+
+<div>
+
+<h3 id="profilePlan">
+FREE PLAN
+</h3>
+
+<p>
+Plan
+</p>
+
+</div>
+
+</div>
+
+<button id="logoutBtn">
+
+Logout
+
+</button>
+
+</div>
+
+</section><!-- SUPPORT PAGE -->
+
+<section id="supportPage" class="page">
+
+<h2 class="pageTitle">
+🎧 Support
+</h2>
+
+<div class="glassCard">
+
+<h3>
+Need Help?
+</h3>
+
+<p>
+Contact Eva Earning support team for any issue related to your account, rewards or withdrawals.
+</p>
+
+<button id="supportBtn">
+
+<span class="material-symbols-rounded">
+support_agent
+</span>
+
+Contact Support
+
+</button>
+
+</div>
+
+</section>
+
+<!-- BOTTOM NAVIGATION -->
+
+<nav class="bottomNav">
+
+<button class="navItem active" data-page="homePage">
+
+<span class="material-symbols-rounded">
+home
+</span>
+
+<span>
+Home
+</span>
+
+</button>
+
+<button class="navItem" data-page="vipPage">
+
+<span class="material-symbols-rounded">
+diamond
+</span>
+
+<span>
+VIP
+</span>
+
+</button>
+
+<button class="navItem" data-page="withdrawPage">
+
+<span class="material-symbols-rounded">
+payments
+</span>
+
+<span>
+Withdraw
+</span>
+
+</button>
+
+<button class="navItem" data-page="profilePage">
+
+<span class="material-symbols-rounded">
+person
+</span>
+
+<span>
+Profile
+</span>
+
+</button>
+
+<button class="navItem" data-page="supportPage">
+
+<span class="material-symbols-rounded">
+help
+</span>
+
+<span>
+Support
+</span>
+
+</button>
+
+</nav>
+
+<!-- LOGIN MODAL -->
+
+<div id="loginModal" class="modal">
+
+<div class="modalBox">
+
+<button class="closeModal" id="closeLoginModal">
+×
+</button>
+
+<h2>
+
+Login
+
+</h2>
+
+<p class="modalText">
+
+Enter your mobile number and password.
+
+</p>
+
+<input
+id="loginPhone"
+type="tel"
+placeholder="Phone Number">
+
+<input
+id="loginPassword"
+type="password"
+placeholder="Password">
+
+<button id="loginSubmit">
+
+Login
+
+</button>
+
+<p style="text-align:center; margin-top:15px; font-size:13px; color:#6b7280;">
+
+Don't have an account? 
+
+<a href="#" id="openRegisterLink" style="color:#2563eb; font-weight:bold; text-decoration:none;">
+
+Create Account
+
+</a>
+
+</p>
+
+</div>
+
+</div>
+
+<!-- CREATE ACCOUNT MODAL -->
+
+<div id="registerModal" class="modal">
+
+<div class="modalBox">
+
+<button class="closeModal" id="closeRegisterModal">
+×
+</button>
+
+<h2>
+
+Create Account
+
+</h2>
+
+<p class="modalText">
+
+Enter your details to register.
+
+</p>
+
+<input
+id="registerName"
+type="text"
+placeholder="Full Name">
+
+<input
+id="registerPhone"
+type="tel"
+placeholder="Phone Number">
+
+<input
+id="registerPassword"
+type="password"
+placeholder="Password">
+
+<button id="registerSubmit">
+
+Create Account
+
+</button>
+
+<p style="text-align:center; margin-top:15px; font-size:13px; color:#6b7280;">
+
+Already have an account? 
+
+<a href="#" id="openLoginLink" style="color:#2563eb; font-weight:bold; text-decoration:none;">
+
+Login
+
+</a>
+
+</p>
+
+</div>
+
+</div>
+
+<!-- TOAST -->
+
+<div id="toast"></div><!-- LOADING OVERLAY -->
+
+<div id="loadingOverlay" class="loadingOverlay hidden">
+
+<div class="loadingContent">
+
+<div class="loaderCircle"></div>
+
+<h3>
+Please Wait...
+</h3>
+
+<p id="loadingText">
+Processing Request
+</p>
+
+</div>
+
+</div>
+
+<!-- SUCCESS MODAL -->
+
+<div id="successModal" class="modal">
+
+<div class="modalBox successBox">
+
+<span class="material-symbols-rounded successIcon">
+task_alt
+</span>
+
+<h2 id="successTitle">
+Success
+</h2>
+
+<p id="successMessage">
+Operation completed successfully.
+</p>
+
+<button id="successOk">
+
+OK
+
+</button>
+
+</div>
+
+</div>
+
+<!-- CONFIRM MODAL -->
+
+<div id="confirmModal" class="modal">
+
+<div class="modalBox">
+
+<h2 id="confirmTitle">
+
+Confirmation
+
+</h2>
+
+<p id="confirmMessage">
+
+Are you sure?
+
+</p>
+
+<div class="confirmButtons">
+
+<button id="confirmCancel">
+
+Cancel
+
+</button>
+
+<button id="confirmOk">
+
+Confirm
+
+</button>
+
+</div>
+
+</div>
+
+</div><!-- NOTIFICATION DRAWER -->
+
+<div id="notificationDrawer" class="notificationDrawer">
+
+<div class="notificationHeader">
+
+<h3>
+Notifications
+</h3>
+
+<button id="closeNotification">
+
+<span class="material-symbols-rounded">
+close
+</span>
+
+</button>
+
+</div>
+
+<div id="notificationList">
+
+<div class="notificationItem">
+
+<span class="material-symbols-rounded">
+notifications
+</span>
+
+<div>
+
+<h4>
+Welcome
+</h4>
+
+<p>
+Welcome to Eva Earning.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- DEMO NOTICE -->
+
+<div class="demoNotice">
+
+<span class="material-symbols-rounded">
+info
+</span>
+
+<p>
+
+Demo Mode: Rewards, deposits and withdrawals are for demonstration purposes only.
+
+</p>
+
+</div>
+
+<!-- BACK TO TOP -->
+
+<button id="backTop">
+
+<span class="material-symbols-rounded">
+keyboard_arrow_up
+</span>
+
+</button><!-- HIDDEN DATA -->
+
+<input
+type="hidden"
+id="currentUserId">
+
+<input
+type="hidden"
+id="currentPlanValue"
+value="FREE PLAN">
+
+<input
+type="hidden"
+id="currentWallet"
+value="0">
+
+<input
+type="hidden"
+id="currentReward"
+value="0">
+
+<!-- AUDIO -->
+
+<audio
+id="rewardSound"
+preload="auto">
+
+<source
+src="assets/reward.mp3"
+type="audio/mpeg">
+
+</audio>
+
+<audio
+id="clickSound"
+preload="auto">
+
+<source
+src="assets/click.mp3"
+type="audio/mpeg">
+
+</audio>
+
+<audio
+id="successSound"
+preload="auto">
+
+<source
+src="assets/success.mp3"
+type="audio/mpeg">
+
+</audio>
+
+<!-- INSTALL PROMPT -->
+
+<div id="installPrompt"
+class="installPrompt hidden">
+
+<div>
+
+<h3>
+Install Eva Earning
+</h3>
+
+<p>
+Install the app for a better experience.
+</p>
+
+</div>
+
+<button id="installBtn">
+
+Install
+
+</button>
+
+</div><!-- OFFLINE MESSAGE -->
+
+<div id="offlineBanner" class="offlineBanner hidden">
+
+<span class="material-symbols-rounded">
+wifi_off
+</span>
+
+<p>
+No Internet Connection
+</p>
+
+</div>
+
+<!-- FOOTER -->
+
+<footer class="appFooter">
+
+<p>
+
+©️ 2026 Eva Earning. All Rights Reserved.
+
+</p>
+
+</footer>
+
+</div>
+<!-- END APP -->
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
